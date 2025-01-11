@@ -19,6 +19,7 @@ class BoardFragment : Fragment() {
     }
 
     private val viewModel: BoardViewModel by viewModels()
+    private var cellTextViews: MutableList<TextView> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +34,17 @@ class BoardFragment : Fragment() {
         val inflatedView = inflater.inflate(R.layout.fragment_board, container, false)
 
         val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
-
         for (i in 0 until 3) {
             for (j in 0 until 3) {
-                val subGrid = GridLayout
+                val subGrid = GridLayout(requireContext())
+                buildGridLayout(subGrid)
+                val params = GridLayout.LayoutParams().apply {
+                    rowSpec = GridLayout.spec(i)
+                    columnSpec = GridLayout.spec(j)
+                    width = ViewGroup.LayoutParams.WRAP_CONTENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+                mainGrid.addView(subGrid, params)
             }
         }
 
@@ -44,19 +52,27 @@ class BoardFragment : Fragment() {
     }
 
     private fun buildGridLayout(grid: GridLayout) {
+        grid.columnCount = 3
+        grid.rowCount = 3
+        grid.setPadding(10, 10, 10, 10)
+        grid.setBackgroundColor(resources.getColor(R.color.black))
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = TextView(requireContext())
-                textView.text = "A"
+                textView.text = "X"
                 textView.gravity = Gravity.CENTER
                 textView.textSize = 24f
+                textView.setBackgroundColor(resources.getColor(R.color.white))
+
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)
                     columnSpec = GridLayout.spec(j)
-                    width = 0
-                    height = 0
+                    width = ViewGroup.LayoutParams.WRAP_CONTENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
                 grid.addView(textView, params)
+
+                cellTextViews.add(textView)
             }
         }
     }
