@@ -37,7 +37,7 @@ class BoardFragment : Fragment() {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val subGrid = GridLayout(requireContext())
-                buildGridLayout(subGrid)
+                buildGridLayout(subGrid, mainGrid.width / 9)
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)
                     columnSpec = GridLayout.spec(j)
@@ -51,10 +51,10 @@ class BoardFragment : Fragment() {
         return inflatedView
     }
 
-    private fun buildGridLayout(grid: GridLayout) {
+    private fun buildGridLayout(grid: GridLayout, w: Int) {
         grid.columnCount = 3
         grid.rowCount = 3
-        grid.setPadding(10, 10, 10, 10)
+        grid.setPadding(5, 5, 5, 5)
         grid.setBackgroundColor(resources.getColor(R.color.black))
         for (i in 0 until 3) {
             for (j in 0 until 3) {
@@ -63,6 +63,8 @@ class BoardFragment : Fragment() {
                 textView.gravity = Gravity.CENTER
                 textView.textSize = 24f
                 textView.setBackgroundColor(resources.getColor(R.color.white))
+                textView.width = w
+                textView.height = w
 
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)
