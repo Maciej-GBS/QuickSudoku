@@ -4,46 +4,83 @@ class Sudoku {
     private val mask = Array(9) { BooleanArray(9) }
     private val board = Array(9) { IntArray(9) }
 
-    fun validate(): Boolean {
-        return validateRows() && validateCols()
+    fun set(row: Int, col: Int, value: Int) {
+        if (mask[row][col]) {
+            return
+        }
+        if (value in VALID_VALUES) {
+            board[row][col] = value
+        }
     }
 
-    private fun validateRows(): Boolean {
+    fun solve() {
+        // TODO
+    }
+
+    fun validate(): ValidationResult {
+        return validateRows() and validateCols() and validateInnerSquares()
+    }
+
+    private fun validateInnerSquares(): ValidationResult {
+        var result: ValidationResult.EResult = ValidationResult.EResult.VALID
+        val conflictingCells: MutableList<Pair<Int, Int>> = mutableListOf()
+        // TODO
+        return ValidationResult(result, conflictingCells)
+    }
+
+    private fun validateRows(): ValidationResult {
+        var result: ValidationResult.EResult = ValidationResult.EResult.VALID
+        val conflictingCells: MutableList<Pair<Int, Int>> = mutableListOf()
         for (row in 0 until 9) {
-            val nonZeroRow = board[row].filter { it != 0 }
-            val distinctRow = nonZeroRow.distinct()
-            if (distinctRow.count() != nonZeroRow.count())
-                throw DuplicateRowException(row)
-            if (!distinctRow.containsAll(VALID_VALUES))
-                return false
+            for (col in 0 until 9) {
+                if (board[row][col] == 0) {
+                    result = ValidationResult.EResult.VALID_INCOMPLETE
+                    continue
+                }
+                for (i in (col + 1) until 9) {
+                    if (board[row][i] == board[row][col]) {
+                        result = ValidationResult.EResult.INVALID_ROW_DUPLICATE
+                        conflictingCells.add(Pair(row, col))
+                        conflictingCells.add(Pair(row, i))
+                    }
+                }
+            }
         }
-        return true
+        return ValidationResult(result, conflictingCells)
     }
 
-    private fun validateCols(): Boolean {
+    private fun validateCols(): ValidationResult {
+        var result: ValidationResult.EResult = ValidationResult.EResult.VALID
+        val conflictingCells: MutableList<Pair<Int, Int>> = mutableListOf()
         for (col in 0 until 9) {
-            val nonZeroCol = board.getColumn(col).filter { it != 0 }
-            val distinctCol = nonZeroCol.distinct()
-            if (distinctCol.count() != nonZeroCol.count())
-                throw DuplicateColException(col)
-            if (!distinctCol.containsAll(VALID_VALUES))
-                return false
+            val column = board.getColumn(col)
+            for (row in 0 until 9) {
+                if (column[row] == 0) {
+                    result = ValidationResult.EResult.VALID_INCOMPLETE
+                    continue
+                }
+                for (i in (row + 1) until 9) {
+                    if (column[i] == column[row]) {
+                        result = ValidationResult.EResult.INVALID_COL_DUPLICATE
+                        conflictingCells.add(Pair(row, col))
+                        conflictingCells.add(Pair(i, col))
+                    }
+                }
+            }
         }
-        return true
+        return ValidationResult(result, conflictingCells)
+    }
+
+    private fun getInnerSquare(squareRow: Int, squareCol: Int): List<List<Int>> {
+        val startRow = (squareRow * 3)
+        val startCol = (squareCol * 3)
+        return board.drop(startRow).take(3).map {
+            it.drop(startCol).take(3)
+        }
     }
 
     private fun Array<IntArray>.getColumn(c: Int): IntArray {
         return this.map { it[c] }.toIntArray()
-    }
-
-    class DuplicateRowException(row: Int)
-        : Exception("Duplicate value in row $row") {
-        val row = row
-    }
-
-    class DuplicateColException(col: Int)
-        : Exception("Duplicate value in col $col") {
-        val col = col
     }
 
     companion object {
