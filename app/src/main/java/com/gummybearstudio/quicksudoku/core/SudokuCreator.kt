@@ -36,8 +36,8 @@ class SudokuCreator(val difficulty: Int) {
             sudoku.set(remCells[0].first, remCells[0].second, value)
             if (validator.validate(sudoku).isValid()) {
                 canBeSolved = canBeSolved && backtraceStep(sudoku, remCells.drop(1))
-                if (earlyStop && !canBeSolved) {
-                    return false
+                if (earlyStop && canBeSolved) {
+                    return true
                 }
             }
         }
