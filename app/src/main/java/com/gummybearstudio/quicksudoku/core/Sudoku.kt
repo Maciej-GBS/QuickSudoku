@@ -17,6 +17,10 @@ class Sudoku() {
         mask[row][col] = true
     }
 
+    fun getMask(row: Int, col: Int): Boolean {
+        return mask[row][col]
+    }
+
     fun set(row: Int, col: Int, value: Int) {
         if (mask[row][col]) {
             return
