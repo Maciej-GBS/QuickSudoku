@@ -18,34 +18,53 @@ class SudokuCreator(val difficulty: Int) {
     }
 
     private fun backtrace(sudoku: Sudoku): Sudoku? {
+        val emptyCells = CELLS.filter { cell ->
+            sudoku.get(cell.first, cell.second) == NO_VALUE
+        }
         possibleSolutions.clear()
-        if (!backtraceStep(sudoku, CELLS, true)) {
+        if (!backtraceStep(sudoku, emptyCells, 1)) {
             return null
         }
+        // remove cells until difficulty is reached
         return possibleSolutions.first()
     }
 
     private fun backtraceStep(sudoku: Sudoku,
                               remCells: List<Pair<Int, Int>>,
-                              earlyStop: Boolean = false): Boolean {
+                              earlyStop: Int = 0): Boolean {
         if (remCells.isEmpty()) {
             possibleSolutions.add(sudoku.copy())
             return true
         }
-        else if (sudoku.getMask(remCells[0].first, remCells[0].second)) {
-            return backtraceStep(sudoku, remCells.drop(1))
-        }
-        var canBeSolved = true
+        var canBeSolved = false
+        val targetCell = getMostConstrainedCell(sudoku, remCells)!!
         for (value in VALID_VALUES) {
-            sudoku.set(remCells[0].first, remCells[0].second, value)
+            if (earlyStop > 0 && possibleSolutions.size >= earlyStop) {
+                return true
+            }
+            sudoku.set(targetCell.first, targetCell.second, value)
             if (validator.validate(sudoku).isValid()) {
-                canBeSolved = canBeSolved && backtraceStep(sudoku, remCells.drop(1))
-                if (earlyStop && canBeSolved) {
-                    return true
-                }
+                canBeSolved = canBeSolved || backtraceStep(sudoku.copy(), remCells.filter {
+                    cell -> targetCell != cell
+                })
             }
         }
         return canBeSolved
+    }
+
+    private fun getMostConstrainedCell(sudoku: Sudoku, domain: List<Pair<Int, Int>>): Pair<Int, Int>? {
+        return domain.maxByOrNull { cell ->
+            val row = cell.first
+            val col = cell.second
+            val innerConstraints = sudoku.getInnerSquare(row / 3, col / 3).flatten().filter {
+                    value -> value != NO_VALUE
+            }.size
+            val rowConstraints = (0 until 9).map { sudoku.get(row, it) }.filter {
+                    value -> value != NO_VALUE
+            }.size
+            val colConstraints = sudoku.getColumn(col).filter { value -> value != NO_VALUE }.size
+            innerConstraints + rowConstraints + colConstraints
+        }
     }
 
     private fun initialize(sudoku: Sudoku) {
@@ -64,6 +83,6 @@ class SudokuCreator(val difficulty: Int) {
     }
 
     private companion object {
-        const val N_INIT_CELLS = 10
+        const val N_INIT_CELLS = 12
     }
 }

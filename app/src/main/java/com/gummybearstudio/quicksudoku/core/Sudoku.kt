@@ -1,16 +1,16 @@
 package com.gummybearstudio.quicksudoku.core
 
-import android.util.Log
-
 class Sudoku() {
     private var mask = Array(9) { BooleanArray(9) { false } }
     private var board = Array(9) { IntArray(9) { NO_VALUE } }
 
+    private constructor(srcMask: Array<BooleanArray>, srcBoard: Array<IntArray>) : this() {
+        mask = Array(9) { srcMask[it].clone() }
+        board = Array(9) { srcBoard[it].clone() }
+    }
+
     fun copy(): Sudoku {
-        val copySudoku = Sudoku()
-        this.mask = Array(9) { mask[it].clone() }
-        this.board = Array(9) { board[it].clone() }
-        return copySudoku
+        return Sudoku(mask, board)
     }
 
     fun setMask(row: Int, col: Int) {

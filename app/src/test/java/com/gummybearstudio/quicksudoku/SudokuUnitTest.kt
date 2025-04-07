@@ -44,17 +44,53 @@ class SudokuUnitTest {
     }
 
     @Test
-    fun successfulCompleteSudokuTest() {
+    fun copySudokuTest() {
+        val sudoku = Sudoku().apply {
+            set(1, 1, 3)
+            set(4, 2, 2)
+            set(7, 5, 1)
+            setMask(4, 2)
+        }
+        val copySudoku = sudoku.copy()
+
+        Sudoku.Companion.CELLS.forEach { cell ->
+            assertEquals(sudoku.getMask(cell.first, cell.second), copySudoku.getMask(cell.first, cell.second))
+            assertEquals(sudoku.get(cell.first, cell.second), copySudoku.get(cell.first, cell.second))
+        }
+    }
+
+    @Test
+    fun successfulSudokuValidationTest() {
+        val sudoku = Sudoku().apply {
+            for (row in 0 until 9) {
+                val offset = (row % 3) * 3 + (row / 3)
+                val rowValues = Sudoku.Companion.VALID_VALUES.drop(offset).plus(Sudoku.Companion.VALID_VALUES.take(offset))
+                for (col in 0 until 9) {
+                    set(row, col, rowValues[col])
+                }
+            }
+        }
+        val result = SudokuValidator().validate(sudoku)
+        printSudoku(sudoku)
+        System.out.println("Validation result: ${result.result}")
+        assertTrue(result.isValid())
+        assertTrue(result.isCompleted())
+    }
+
+    @Test
+    fun successfulCreateSudokuTest() {
         val validator = SudokuValidator()
         val creator = SudokuCreator(0)
         val sudoku = creator.create(3, 3, 9)!!
+        printSudoku(sudoku)
+        assertTrue(validator.validate(sudoku).isCompleted())
+    }
 
+    private fun printSudoku(sudoku: Sudoku) {
         Sudoku.Companion.CELLS.forEach { cell ->
             if (cell.second == 0) System.out.println()
             System.out.print("${sudoku.get(cell.first, cell.second)} ")
         }
         System.out.println()
-
-        assertTrue(validator.validate(sudoku).isCompleted())
     }
 }
