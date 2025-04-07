@@ -25,4 +25,8 @@ class ValidationResult(val result: EResult, val conflictingCells: List<Pair<Int,
         )
         return combined
     }
+
+    fun equals(other: ValidationResult): Boolean {
+        return this.result == other.result && this.conflictingCells == other.conflictingCells
+    }
 }

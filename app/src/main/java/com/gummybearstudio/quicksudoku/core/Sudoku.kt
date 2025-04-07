@@ -4,7 +4,7 @@ import android.util.Log
 
 class Sudoku() {
     private var mask = Array(9) { BooleanArray(9) { false } }
-    private var board = Array(9) { IntArray(9) { 0 } }
+    private var board = Array(9) { IntArray(9) { NO_VALUE } }
 
     fun copy(): Sudoku {
         val copySudoku = Sudoku()
@@ -25,7 +25,7 @@ class Sudoku() {
         if (mask[row][col]) {
             return
         }
-        if (value == 0 || value in VALID_VALUES) {
+        else if (value == NO_VALUE || value in VALID_VALUES) {
             board[row][col] = value
         }
     }
@@ -49,7 +49,7 @@ class Sudoku() {
     fun reset() {
         board.zip(mask).forEach {
             for (i in 0 until it.first.size) {
-                if (it.second[i]) it.first[i] = 0
+                if (it.second[i]) it.first[i] = NO_VALUE
             }
         }
     }
@@ -59,5 +59,6 @@ class Sudoku() {
         val CELLS: List<Pair<Int, Int>> = (0 until 9).flatMap {
             row -> (0 until 9).map { col -> Pair(row, col) }
         }
+        const val NO_VALUE = 0
     }
 }
