@@ -49,7 +49,7 @@ class Sudoku() {
     fun reset() {
         board.zip(mask).forEach {
             for (i in 0 until it.first.size) {
-                if (it.second[i]) it.first[i] = NO_VALUE
+                if (!it.second[i]) it.first[i] = NO_VALUE
             }
         }
     }

@@ -18,15 +18,42 @@ class SudokuCreator(val difficulty: Int) {
     }
 
     private fun backtrace(sudoku: Sudoku): Sudoku? {
-        val emptyCells = CELLS.filter { cell ->
-            sudoku.get(cell.first, cell.second) == NO_VALUE
+        // Find a complete valid board
+        val getEmptyCells =  { testSudoku: Sudoku ->
+            CELLS.filter { cell ->
+                testSudoku.get(cell.first, cell.second) == NO_VALUE
+            }
         }
         possibleSolutions.clear()
-        if (!backtraceStep(sudoku, emptyCells, 1)) {
+        if (!backtraceStep(sudoku, getEmptyCells(sudoku), 1)) {
             return null
         }
-        // remove cells until difficulty is reached
-        return possibleSolutions.first()
+        val solution = possibleSolutions.first()
+        // Clear cells until difficulty is reached
+        val hiddenCells: MutableSet<Pair<Int, Int>> = mutableSetOf()
+        var maskedSudoku: Sudoku
+        var iterations = 0
+        do {
+            if (++iterations > 10000) throw UnreachableDifficultyException()
+            val cell = CELLS.random()
+            if (solution.getMask(cell.first, cell.second)) continue
+            maskedSudoku = solution.copy().apply {
+                hiddenCells.forEach {
+                    set(it.first, it.second, NO_VALUE)
+                }
+                set(cell.first, cell.second, NO_VALUE)
+            }
+            possibleSolutions.clear()
+            backtraceStep(maskedSudoku, getEmptyCells(maskedSudoku), 2)
+            if (possibleSolutions.size == 1) {
+                hiddenCells.add(cell)
+            }
+        } while ((CELLS.size - hiddenCells.size) > difficulty)
+        CELLS.subtract(hiddenCells).forEach {
+            solution.setMask(it.first, it.second)
+        }
+        solution.reset()
+        return solution
     }
 
     private fun backtraceStep(sudoku: Sudoku,
@@ -85,4 +112,6 @@ class SudokuCreator(val difficulty: Int) {
     private companion object {
         const val N_INIT_CELLS = 12
     }
+
+    class UnreachableDifficultyException() : Exception("Unreachable difficulty")
 }
