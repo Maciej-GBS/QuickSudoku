@@ -2,13 +2,16 @@ package com.gummybearstudio.quicksudoku.ui.board
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.gridlayout.widget.GridLayout
 import android.widget.TextView
+import androidx.compose.ui.Modifier
 
 import com.gummybearstudio.quicksudoku.R
 
@@ -34,12 +37,13 @@ class BoardFragment : Fragment() {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val subGrid = GridLayout(requireContext())
-                buildGridLayout(subGrid, mainGrid.width / 9)
+                buildGridLayout(subGrid)
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)
                     columnSpec = GridLayout.spec(j)
                     width = ViewGroup.LayoutParams.WRAP_CONTENT
                     height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    setGravity(Gravity.CENTER)
                 }
                 mainGrid.addView(subGrid, params)
             }
@@ -48,7 +52,7 @@ class BoardFragment : Fragment() {
         return inflatedView
     }
 
-    private fun buildGridLayout(grid: GridLayout, w: Int) {
+    private fun buildGridLayout(grid: GridLayout) {
         grid.columnCount = 3
         grid.rowCount = 3
         grid.setPadding(5, 5, 5, 5)
@@ -56,18 +60,16 @@ class BoardFragment : Fragment() {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = TextView(requireContext())
-                textView.text = " "
-                textView.gravity = Gravity.CENTER
-                textView.textSize = w.toFloat()
+                textView.text = "X"
+                textView.textSize = 48f
                 textView.setBackgroundColor(resources.getColor(R.color.white))
-                textView.width = w
-                textView.height = w
 
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)
                     columnSpec = GridLayout.spec(j)
-                    width = ViewGroup.LayoutParams.WRAP_CONTENT
-                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    setGravity(Gravity.CENTER)
+                    //width = ViewGroup.LayoutParams.WRAP_CONTENT
+                    //height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
                 grid.addView(textView, params)
 
