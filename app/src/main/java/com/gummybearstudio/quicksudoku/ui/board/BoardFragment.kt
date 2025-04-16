@@ -13,7 +13,6 @@ import android.widget.TextView
 import com.gummybearstudio.quicksudoku.R
 
 class BoardFragment : Fragment() {
-
     companion object {
         fun newInstance() = BoardFragment()
     }
@@ -59,7 +58,7 @@ class BoardFragment : Fragment() {
                 val textView = TextView(requireContext())
                 textView.text = " "
                 textView.gravity = Gravity.CENTER
-                textView.textSize = 24f
+                textView.textSize = w.toFloat()
                 textView.setBackgroundColor(resources.getColor(R.color.white))
                 textView.width = w
                 textView.height = w

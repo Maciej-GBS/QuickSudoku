@@ -21,13 +21,15 @@ class Sudoku() {
         return mask[row][col]
     }
 
-    fun set(row: Int, col: Int, value: Int) {
+    fun set(row: Int, col: Int, value: Int): Boolean {
         if (mask[row][col]) {
-            return
+            return false
         }
         else if (value == NO_VALUE || value in VALID_VALUES) {
             board[row][col] = value
+            return true
         }
+        return false
     }
 
     fun get(row: Int, col: Int): Int {
