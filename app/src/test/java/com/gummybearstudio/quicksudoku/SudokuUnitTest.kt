@@ -27,20 +27,20 @@ class SudokuUnitTest {
             Pair(2, 2)
         ))
 
-        assertTrue(result1.equals(result1))
-        assertFalse(result1.equals(result2))
-        assertFalse(result1.equals(result3))
+        assertEquals(result1, result1)
+        assertNotEquals(result1, result2)
+        assertNotEquals(result1, result3)
 
-        assertTrue(result2.equals(result1 and result2))
-        assertTrue(result3.equals(result1 and result3))
-        assertTrue(result4.equals(result2 and result4))
+        assertEquals(result2, (result1 and result2))
+        assertEquals(result3, (result1 and result3))
+        assertEquals(result4, (result2 and result4))
 
         val expectedResult = ValidationResult(ValidationResult.EResult.INVALID, listOf(
             Pair(1, 1),
             Pair(1, 7),
             Pair(2, 2)
         ))
-        assertTrue(expectedResult.equals(result3 and result4))
+        assertEquals(expectedResult, (result3 and result4))
     }
 
     @Test
@@ -49,7 +49,7 @@ class SudokuUnitTest {
             set(1, 1, 3)
             set(4, 2, 2)
             set(7, 5, 1)
-            setMask(4, 2, true)
+            setMask(4, 2)
         }
         val copySudoku = sudoku.copy()
 
@@ -65,7 +65,7 @@ class SudokuUnitTest {
             set(1, 1, 3)
             set(4, 2, 2)
             set(7, 5, 1)
-            setMask(4, 2, true)
+            setMask(4, 2)
             reset()
         }
         assertEquals(sudoku.get(1, 1), Sudoku.Companion.NO_VALUE)
@@ -93,10 +93,12 @@ class SudokuUnitTest {
     @Test
     fun successfulCreateSudokuTest() {
         val validator = SudokuValidator()
-        val creator = SudokuCreator(0)
+        val creator = SudokuCreator(10)
         val sudoku = creator.create(3, 3, 9)!!
         printSudoku(sudoku)
-        //assertTrue(validator.validate(sudoku).isCompleted())
+        assertEquals(validator.validate(sudoku), ValidationResult(
+            ValidationResult.EResult.VALID_INCOMPLETE, listOf()
+        ))
     }
 
     private fun printSudoku(sudoku: Sudoku) {

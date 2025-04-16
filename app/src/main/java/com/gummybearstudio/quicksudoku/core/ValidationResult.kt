@@ -26,7 +26,8 @@ class ValidationResult(val result: EResult, val conflictingCells: List<Pair<Int,
         return combined
     }
 
-    fun equals(other: ValidationResult): Boolean {
+    override fun equals(other: Any?): Boolean {
+        if (other !is ValidationResult) return false
         return this.result == other.result && this.conflictingCells == other.conflictingCells
     }
 }

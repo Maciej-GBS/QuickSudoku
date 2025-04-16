@@ -23,8 +23,6 @@ class BoardFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -59,7 +57,7 @@ class BoardFragment : Fragment() {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = TextView(requireContext())
-                textView.text = "X"
+                textView.text = " "
                 textView.gravity = Gravity.CENTER
                 textView.textSize = 24f
                 textView.setBackgroundColor(resources.getColor(R.color.white))
