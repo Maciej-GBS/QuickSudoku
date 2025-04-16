@@ -2,16 +2,13 @@ package com.gummybearstudio.quicksudoku.ui.board
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.gridlayout.widget.GridLayout
 import android.widget.TextView
-import androidx.compose.ui.Modifier
 
 import com.gummybearstudio.quicksudoku.R
 
@@ -21,7 +18,7 @@ class BoardFragment : Fragment() {
     }
 
     private val viewModel: BoardViewModel by viewModels()
-    private var cellTextViews: MutableList<TextView> = mutableListOf()
+    private var cellTextViews: MutableList<CellTextView> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,10 +56,10 @@ class BoardFragment : Fragment() {
         grid.setBackgroundColor(resources.getColor(R.color.black))
         for (i in 0 until 3) {
             for (j in 0 until 3) {
-                val textView = TextView(requireContext())
+                val textView = CellTextView(requireContext())
                 textView.text = "X"
-                textView.textSize = 48f
-                textView.setBackgroundColor(resources.getColor(R.color.white))
+                textView.textSize = 24f
+                textView.setBackgroundColor(resources.getColor(R.color.purple_100))
 
                 val params = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(i)

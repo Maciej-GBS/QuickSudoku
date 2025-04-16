@@ -14,8 +14,8 @@ class CellTextView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        val p = parent as View
-        val size = listOf(p.measuredWidth, p.measuredHeight).min()
+        val p = this as View
+        val size = listOf(p.measuredWidth, p.measuredHeight).max()
 
         setMeasuredDimension(size, size)
     }
