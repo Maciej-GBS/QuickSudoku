@@ -7,14 +7,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
-import android.widget.TextView
 
 import com.gummybearstudio.quicksudoku.R
 
 class BoardFragment : Fragment() {
     companion object {
         fun newInstance() = BoardFragment()
+
+        const val INNER_PADDING = 4
     }
 
     private val viewModel: BoardViewModel by viewModels()
@@ -22,6 +24,10 @@ class BoardFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.state.observe(this, {
+            state -> Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
+        })
     }
 
     override fun onCreateView(
@@ -35,14 +41,7 @@ class BoardFragment : Fragment() {
             for (j in 0 until 3) {
                 val subGrid = GridLayout(requireContext())
                 buildGridLayout(subGrid)
-                val params = GridLayout.LayoutParams().apply {
-                    rowSpec = GridLayout.spec(i)
-                    columnSpec = GridLayout.spec(j)
-                    width = ViewGroup.LayoutParams.WRAP_CONTENT
-                    height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    setGravity(Gravity.CENTER)
-                }
-                mainGrid.addView(subGrid, params)
+                mainGrid.addView(subGrid, createGridLayoutParams(i, j))
             }
         }
 
@@ -52,26 +51,26 @@ class BoardFragment : Fragment() {
     private fun buildGridLayout(grid: GridLayout) {
         grid.columnCount = 3
         grid.rowCount = 3
-        grid.setPadding(5, 5, 5, 5)
-        grid.setBackgroundColor(resources.getColor(R.color.black))
+        grid.setPadding(INNER_PADDING, INNER_PADDING, INNER_PADDING, INNER_PADDING)
+        grid.setBackgroundColor(resources.getColor(R.color.purple_900))
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = CellTextView(requireContext())
-                textView.text = "X"
-                textView.textSize = 24f
+                textView.text = " "
+                textView.textSize = 26f
+                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 textView.setBackgroundColor(resources.getColor(R.color.purple_100))
-
-                val params = GridLayout.LayoutParams().apply {
-                    rowSpec = GridLayout.spec(i)
-                    columnSpec = GridLayout.spec(j)
-                    setGravity(Gravity.CENTER)
-                    //width = ViewGroup.LayoutParams.WRAP_CONTENT
-                    //height = ViewGroup.LayoutParams.WRAP_CONTENT
-                }
-                grid.addView(textView, params)
-
+                grid.addView(textView, createGridLayoutParams(i, j))
                 cellTextViews.add(textView)
             }
+        }
+    }
+
+    private fun createGridLayoutParams(row: Int, col: Int): GridLayout.LayoutParams {
+        return GridLayout.LayoutParams().apply {
+            rowSpec = GridLayout.spec(row)
+            columnSpec = GridLayout.spec(col)
+            setGravity(Gravity.CENTER)
         }
     }
 
