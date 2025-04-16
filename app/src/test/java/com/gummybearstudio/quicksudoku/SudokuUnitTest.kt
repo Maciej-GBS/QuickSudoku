@@ -85,7 +85,7 @@ class SudokuUnitTest {
         }
         val result = SudokuValidator().validate(sudoku)
         printSudoku(sudoku)
-        System.out.println("Validation result: ${result.result}")
+        println("Validation result: ${result.result}")
         assertTrue(result.isValid())
         assertTrue(result.isCompleted())
     }
@@ -103,9 +103,9 @@ class SudokuUnitTest {
 
     private fun printSudoku(sudoku: Sudoku) {
         Sudoku.Companion.CELLS.forEach { cell ->
-            if (cell.second == 0) System.out.println()
-            System.out.print("${sudoku.get(cell.first, cell.second)} ")
+            if (cell.second == 0) println()
+            print("${sudoku.get(cell.first, cell.second)} ")
         }
-        System.out.println()
+        println()
     }
 }
