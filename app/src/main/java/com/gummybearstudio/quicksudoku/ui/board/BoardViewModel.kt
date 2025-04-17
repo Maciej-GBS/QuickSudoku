@@ -35,6 +35,17 @@ class BoardViewModel : ViewModel() {
     private val validator = SudokuValidator()
     private var sudoku: Sudoku? = null
 
+    fun createSaveGame(): SaveGame? {
+        return sudoku?.let { SaveGame(_state.value!!, sudoku!!.toData()) }
+    }
+
+    fun loadSaveGame(saveGame: SaveGame) {
+        _state.value = saveGame.state
+        sudoku = Sudoku(saveGame.sudoku)
+        markInvalidCells(validator.validate(sudoku!!))
+        refreshLiveBoard()
+    }
+
     fun newGame() {
         sudoku = null
         _state.value = EGameState.NEW_GAME

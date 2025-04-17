@@ -15,9 +15,9 @@ import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatDecode
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
 class BoardFragment : Fragment() {
+
     companion object {
         fun newInstance() = BoardFragment()
-
         const val INNER_PADDING = 4
     }
 
@@ -30,12 +30,22 @@ class BoardFragment : Fragment() {
         viewModel.state.observe(this) { state ->
             Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
         }
-        viewModel.selectedCell.observe(this) { cell ->
-            cellTextViews.forEach { textView ->
-                textView.setBackgroundColor(resources.getColor(R.color.purple_100))
-            }
-            cellTextViews[cell.flatEncode()].setBackgroundColor(resources.getColor(R.color.purple_200))
+        viewModel.selectedCell.observe(this, ::callbackCellSelected)
+        viewModel.validFlags.observe(this, ::callbackCellValidity)
+        viewModel.cellValues.observe(this, ::callbackCellValues)
+    }
+
+    private fun callbackCellSelected(cell: Pair<Int, Int>) {
+        cellTextViews.forEach { textView ->
+            textView.setBackgroundColor(resources.getColor(R.color.purple_100))
         }
+        cellTextViews[cell.flatEncode()].setBackgroundColor(resources.getColor(R.color.purple_200))
+    }
+
+    private fun callbackCellValidity(validity: List<Boolean>) {
+    }
+
+    private fun callbackCellValues(values: List<Int>) {
     }
 
     override fun onCreateView(

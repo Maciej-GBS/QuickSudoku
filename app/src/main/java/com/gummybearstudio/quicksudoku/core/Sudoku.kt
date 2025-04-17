@@ -9,6 +9,18 @@ class Sudoku() {
         board = Array(9) { srcBoard[it].clone() }
     }
 
+    constructor(data: SudokuData) : this() {
+        mask = data.mask.map { it.toBooleanArray() }.toTypedArray()
+        board = data.board.map { it.toIntArray() }.toTypedArray()
+    }
+
+    fun toData(): SudokuData {
+        return SudokuData(
+            mask.map { it.toList() },
+            board.map { it.toList() }
+        )
+    }
+
     fun copy(): Sudoku {
         return Sudoku(mask, board)
     }
