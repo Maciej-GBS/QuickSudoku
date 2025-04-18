@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
 
 import com.gummybearstudio.quicksudoku.R
+import com.gummybearstudio.quicksudoku.core.Sudoku.Companion.NO_VALUE
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatDecode
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
@@ -43,7 +44,7 @@ class BoardFragment : Fragment(), IGameControls {
     override fun onKeyPressed(id: Int) {
         when (viewModel.state.value) {
             EGameState.NEW_GAME ->
-                viewModel.startGame(id, 10) // TODO prompt user for difficulty
+                viewModel.startGame(id, 70) // TODO prompt user for difficulty
             EGameState.ONGOING ->
                 viewModel.updateCell(id)
             else -> {}
@@ -77,7 +78,10 @@ class BoardFragment : Fragment(), IGameControls {
 
     private fun callbackCellValues(values: List<Int>) {
         cellTextViews.zip(values).forEach {
-            it.first.text = it.second.toString()
+            when (it.second) {
+                NO_VALUE -> it.first.text = " "
+                else -> it.first.text = it.second.toString()
+            }
         }
     }
 

@@ -1,12 +1,10 @@
 package com.gummybearstudio.quicksudoku
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
-import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
 import com.gummybearstudio.quicksudoku.ui.board.BoardFragment
 import com.gummybearstudio.quicksudoku.ui.board.IGameControls
 
@@ -23,18 +21,13 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, board)
                 .commitNow()
         }
-    }
 
-    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-        val view = super.onCreateView(name, context, attrs)
-        return view?.also {
-            val bottomScroll = view.findViewById<HorizontalScrollView>(R.id.bottomScroll)
-            bottomScroll.addView(createButton("New Game") { controls.onStartNewGame() })
-            bottomScroll.addView(createButton("Clear") { controls.onKeyPressed(0) })
-            (1 until 10).forEach { intValue ->
-                bottomScroll.addView(
-                    createButton(intValue.toString()) { controls.onKeyPressed(intValue) })
-            }
+        val bottomScroll = findViewById<LinearLayout>(R.id.bottomScroll)
+        bottomScroll.addView(createButton("New Game") { controls.onStartNewGame() })
+        bottomScroll.addView(createButton("Clear") { controls.onKeyPressed(0) })
+        (1 until 10).forEach { intValue ->
+            bottomScroll.addView(
+                createButton(intValue.toString()) { controls.onKeyPressed(intValue) })
         }
     }
 
