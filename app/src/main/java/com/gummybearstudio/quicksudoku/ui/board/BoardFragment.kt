@@ -14,7 +14,7 @@ import com.gummybearstudio.quicksudoku.R
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatDecode
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
-class BoardFragment : Fragment() {
+class BoardFragment : Fragment(), IGameControls {
 
     companion object {
         fun newInstance() = BoardFragment()
@@ -34,6 +34,20 @@ class BoardFragment : Fragment() {
         viewModel.selectedCell.observe(this) { cell -> callbackCellColorChanged(cell) }
         viewModel.validFlags.observe(this) { flags -> callbackCellColorChanged(flags) }
         viewModel.cellValues.observe(this, ::callbackCellValues)
+    }
+
+    override fun onStartNewGame() {
+        viewModel.newGame()
+    }
+
+    override fun onKeyPressed(id: Int) {
+        when (viewModel.state.value) {
+            EGameState.NEW_GAME ->
+                viewModel.startGame(id, 10) // TODO prompt user for difficulty
+            EGameState.ONGOING ->
+                viewModel.updateCell(id)
+            else -> {}
+        }
     }
 
     private fun callbackCellColorChanged(cellOrFlags: Any) {
@@ -115,5 +129,4 @@ class BoardFragment : Fragment() {
             setGravity(Gravity.CENTER)
         }
     }
-
 }

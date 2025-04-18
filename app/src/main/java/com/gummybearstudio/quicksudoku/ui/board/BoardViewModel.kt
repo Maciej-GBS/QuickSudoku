@@ -12,13 +12,6 @@ import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
 class BoardViewModel : ViewModel() {
 
-    enum class EGameState {
-        INITIAL,
-        NEW_GAME,
-        ONGOING,
-        FINISHED
-    }
-
     class InvalidGameStateException(what: String, state: EGameState) :
         Exception("$what not allowed in game state $state")
 
