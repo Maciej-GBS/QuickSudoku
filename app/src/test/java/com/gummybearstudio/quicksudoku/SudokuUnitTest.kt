@@ -7,6 +7,7 @@ import com.gummybearstudio.quicksudoku.core.ValidationResult
 
 import org.junit.Test
 import org.junit.Assert.*
+import kotlin.system.measureTimeMillis
 
 class SudokuUnitTest {
     @Test
@@ -52,6 +53,11 @@ class SudokuUnitTest {
             assertEquals(sudoku.getMask(cell.first, cell.second), copySudoku.getMask(cell.first, cell.second))
             assertEquals(sudoku.get(cell.first, cell.second), copySudoku.get(cell.first, cell.second))
         }
+
+        copySudoku.set(2, 2, 9)
+        sudoku.set(3, 3, 9)
+        assertNotEquals(sudoku.get(2, 2), copySudoku.get(2, 2))
+        assertNotEquals(sudoku.get(3, 3), copySudoku.get(3, 3))
     }
 
     @Test
@@ -79,21 +85,52 @@ class SudokuUnitTest {
             }
         }
         val result = SudokuValidator().validate(sudoku)
-        printSudoku(sudoku)
         println("Validation result: ${result.result}")
         assertTrue(result.isValid())
         assertTrue(result.isCompleted())
     }
 
-    @Test
+    @Test(timeout = 10000)
     fun successfulCreateSudokuTest() {
         val validator = SudokuValidator()
-        val creator = SudokuCreator(10)
-        val sudoku = creator.create(3, 3, 9)!!
+        val creator = SudokuCreator(70)
+        val sudoku = creator.create(3, 3, 9)
         printSudoku(sudoku)
-        assertEquals(validator.validate(sudoku), ValidationResult(
-            ValidationResult.EResult.VALID_INCOMPLETE, listOf()
-        ))
+        assertEquals(
+            validator.validate(sudoku), ValidationResult(
+                ValidationResult.EResult.VALID_INCOMPLETE, listOf()
+            )
+        )
+    }
+
+    @Test(timeout = 20000)
+    fun perfCreateSudokuTest() {
+        var assertedOnce = false
+        val validator = SudokuValidator()
+        val creator = SudokuCreator(30)
+        try {
+            creator.create(6, 6, 1)
+        } catch (_: Exception) {}
+        val executionTime = measureTimeMillis {
+            for (i in 0 until 10) {
+                try {
+                    val sudoku = creator.create(3, 3, 9)
+                    assertEquals(
+                        validator.validate(sudoku), ValidationResult(
+                            ValidationResult.EResult.VALID_INCOMPLETE, listOf()
+                        )
+                    )
+                    assertedOnce = true
+                } catch (_: Exception) {}
+            }
+        }
+        println("(perfCreateSudokuTest) Execution time: $executionTime ms")
+        assertTrue(assertedOnce)
+    }
+
+    @Test(expected = SudokuCreator.UnreachableDifficultyException::class, timeout = 10000)
+    fun failedCreateSudokuTest() {
+        SudokuCreator(1).create(1, 1, 1)
     }
 
     private fun printSudoku(sudoku: Sudoku) {

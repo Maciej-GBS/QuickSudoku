@@ -29,7 +29,7 @@ class BoardFragment : Fragment(), IGameControls {
         super.onCreate(savedInstanceState)
 
         viewModel.state.observe(this) { state ->
-            // TODO
+            // TODO handle UI state modes
             Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
         }
         viewModel.selectedCell.observe(this) { cell -> callbackCellColorChanged(cell) }
@@ -44,7 +44,7 @@ class BoardFragment : Fragment(), IGameControls {
     override fun onKeyPressed(id: Int) {
         when (viewModel.state.value) {
             EGameState.NEW_GAME ->
-                viewModel.startGame(id, 70) // TODO prompt user for difficulty
+                viewModel.startGame(id, 50) // TODO prompt user for difficulty
             EGameState.ONGOING ->
                 viewModel.updateCell(id)
             else -> {}
@@ -54,7 +54,7 @@ class BoardFragment : Fragment(), IGameControls {
     private fun callbackCellColorChanged(cellOrFlags: Any) {
         var cell: Pair<Int, Int>? = null
         var flags: List<Boolean>? = null
-        when (val v = cellOrFlags) {
+        when (cellOrFlags) {
             is Pair<*, *> -> {
                 cell = cellOrFlags as Pair<Int, Int>
                 flags = viewModel.validFlags.value
@@ -113,7 +113,7 @@ class BoardFragment : Fragment(), IGameControls {
             for (j in 0 until 3) {
                 val textView = CellTextView(requireContext())
                 textView.text = " "
-                textView.textSize = 26f
+                textView.textSize = 26f // TODO should be calculated
                 textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 textView.setBackgroundColor(resources.getColor(R.color.white))
                 textView.setOnClickListener {
