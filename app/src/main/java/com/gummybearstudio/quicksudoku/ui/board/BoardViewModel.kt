@@ -17,11 +17,13 @@ class BoardViewModel : ViewModel() {
 
     private val _state: MutableLiveData<EGameState> = MutableLiveData(EGameState.INITIAL)
     private val _validFlags: MutableLiveData<List<Boolean>> = MutableLiveData()
+    private val _maskFlags: MutableLiveData<List<Boolean>> = MutableLiveData()
     private val _cellValues: MutableLiveData<List<Int>> = MutableLiveData()
     private val _selectedCell: MutableLiveData<Pair<Int, Int>> = MutableLiveData(Pair(0, 0))
 
     val state: LiveData<EGameState> get() = _state
     val validFlags: LiveData<List<Boolean>> get() = _validFlags
+    val maskFlags: LiveData<List<Boolean>> get() = _maskFlags
     val cellValues: LiveData<List<Int>> get() = _cellValues
     val selectedCell: LiveData<Pair<Int, Int>> get() = _selectedCell
 
@@ -36,11 +38,13 @@ class BoardViewModel : ViewModel() {
         _state.value = saveGame.state
         sudoku = Sudoku(saveGame.sudoku)
         markInvalidCells(validator.validate(sudoku!!))
+        markMaskedCells()
         refreshLiveBoard()
     }
 
     fun newGame() {
         sudoku = null
+        markMaskedCells()
         _state.value = EGameState.NEW_GAME
     }
 
@@ -50,6 +54,7 @@ class BoardViewModel : ViewModel() {
         }
         val cell = _selectedCell.value!!
         sudoku = SudokuCreator(difficulty).create(cell.first, cell.second, initValue)
+        markMaskedCells()
         refreshLiveBoard()
         _state.value = EGameState.ONGOING
     }
@@ -71,6 +76,18 @@ class BoardViewModel : ViewModel() {
 
     fun select(row: Int, col: Int) {
         _selectedCell.value = Pair(row, col)
+    }
+
+    private fun markMaskedCells() {
+        val mutableFlags = MutableList(Sudoku.CELLS.size) { false }
+        if (sudoku == null) {
+            _maskFlags.value = mutableFlags
+            return
+        }
+        Sudoku.CELLS.forEach {
+            mutableFlags[it.flatEncode()] = sudoku!!.getMask(it.first, it.second)
+        }
+        _maskFlags.value = mutableFlags
     }
 
     private fun markInvalidCells(validationResult: ValidationResult) {

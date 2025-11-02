@@ -37,7 +37,8 @@ class BoardFragment : Fragment(), IGameControls {
             Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
         }
         viewModel.selectedCell.observe(this) { cell -> callbackCellColorChanged(cell) }
-        viewModel.validFlags.observe(this) { flags -> callbackFlagColorChanged(flags) }
+        viewModel.validFlags.observe(this) { flags -> callbackValidColorChanged(flags) }
+        viewModel.maskFlags.observe(this) { flags -> callbackMaskColorChanged(flags) }
         viewModel.cellValues.observe(this, ::callbackCellValues)
     }
 
@@ -81,12 +82,21 @@ class BoardFragment : Fragment(), IGameControls {
         cellTextViews.forEach { textView ->
             textView.setBackgroundColor(resources.getColor(R.color.white))
         }
+        viewModel.maskFlags.value?.apply {
+            callbackMaskColorChanged(this)
+        }
     }
 
-    private fun callbackFlagColorChanged(flags: List<Boolean>) {
+    private fun callbackValidColorChanged(flags: List<Boolean>) {
         resetColor()
         flags.zip(cellTextViews).forEach {
             if (!it.first) it.second.setBackgroundColor(resources.getColor(R.color.error))
+        }
+    }
+
+    private fun callbackMaskColorChanged(flags: List<Boolean>) {
+        flags.zip(cellTextViews).forEach {
+            if (it.first) it.second.setBackgroundColor(resources.getColor(R.color.mask))
         }
     }
 
