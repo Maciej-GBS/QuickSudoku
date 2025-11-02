@@ -50,7 +50,6 @@ class BoardViewModel : ViewModel() {
         }
         val cell = _selectedCell.value!!
         sudoku = SudokuCreator(difficulty).create(cell.first, cell.second, initValue)
-        if (sudoku == null) return // failed to generate sudoku
         refreshLiveBoard()
         _state.value = EGameState.ONGOING
     }

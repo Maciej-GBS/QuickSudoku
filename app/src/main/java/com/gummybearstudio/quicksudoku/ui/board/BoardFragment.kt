@@ -1,5 +1,6 @@
 package com.gummybearstudio.quicksudoku.ui.board
 
+import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.view.Gravity
@@ -11,7 +12,7 @@ import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
 
 import com.gummybearstudio.quicksudoku.R
-import com.gummybearstudio.quicksudoku.core.Sudoku.Companion.NO_VALUE
+import com.gummybearstudio.quicksudoku.core.Sudoku
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatDecode
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
@@ -20,6 +21,9 @@ class BoardFragment : Fragment(), IGameControls {
     companion object {
         fun newInstance() = BoardFragment()
         const val INNER_PADDING = 4
+
+        private const val PREFS_KEY = "sudokuPrefs"
+        private const val SAVE_GAME_KEY = "sudokuSaveGame"
     }
 
     private val viewModel: BoardViewModel by viewModels()
@@ -33,7 +37,7 @@ class BoardFragment : Fragment(), IGameControls {
             Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
         }
         viewModel.selectedCell.observe(this) { cell -> callbackCellColorChanged(cell) }
-        viewModel.validFlags.observe(this) { flags -> callbackCellColorChanged(flags) }
+        viewModel.validFlags.observe(this) { flags -> callbackFlagColorChanged(flags) }
         viewModel.cellValues.observe(this, ::callbackCellValues)
     }
 
@@ -51,35 +55,53 @@ class BoardFragment : Fragment(), IGameControls {
         }
     }
 
-    private fun callbackCellColorChanged(cellOrFlags: Any) {
-        var cell: Pair<Int, Int>? = null
-        var flags: List<Boolean>? = null
-        when (cellOrFlags) {
-            is Pair<*, *> -> {
-                cell = cellOrFlags as Pair<Int, Int>
-                flags = viewModel.validFlags.value
-            }
-            is List<*> -> {
-                cell = viewModel.selectedCell.value
-                flags = cellOrFlags as List<Boolean>
+    override fun onLoad() {
+        val prefs = requireActivity()
+            .getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
+        val savedJson = prefs.getString(SAVE_GAME_KEY, null)
+        if (!savedJson.isNullOrEmpty()) {
+            val deserializedSaveGame = decodeSaveGameFromJson(savedJson)
+            viewModel.loadSaveGame(deserializedSaveGame)
+        }
+    }
+
+    override fun onSave() {
+        val jsonSaveGame = viewModel.createSaveGame()?.encodeToJson()
+        if (jsonSaveGame != null) {
+            val prefs = requireActivity()
+                .getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
+            with(prefs.edit()) {
+                putString(SAVE_GAME_KEY, jsonSaveGame)
+                apply()
             }
         }
+    }
+
+    private fun resetColor() {
         cellTextViews.forEach { textView ->
             textView.setBackgroundColor(resources.getColor(R.color.white))
         }
-        cell?.apply {
+    }
+
+    private fun callbackFlagColorChanged(flags: List<Boolean>) {
+        resetColor()
+        flags.zip(cellTextViews).forEach {
+            if (!it.first) it.second.setBackgroundColor(resources.getColor(R.color.error))
+        }
+    }
+
+    private fun callbackCellColorChanged(cell: Pair<Int, Int>) {
+        resetColor()
+        cell.apply {
             cellTextViews[this.flatEncode()]
                 .setBackgroundColor(resources.getColor(R.color.selection))
-        }
-        flags?.zip(cellTextViews)?.forEach {
-            if (!it.first) it.second.setBackgroundColor(resources.getColor(R.color.error))
         }
     }
 
     private fun callbackCellValues(values: List<Int>) {
         cellTextViews.zip(values).forEach {
             when (it.second) {
-                NO_VALUE -> it.first.text = " "
+                Sudoku.NO_VALUE -> it.first.text = " "
                 else -> it.first.text = it.second.toString()
             }
         }

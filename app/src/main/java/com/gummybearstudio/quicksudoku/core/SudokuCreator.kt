@@ -1,7 +1,5 @@
 package com.gummybearstudio.quicksudoku.core
 
-import androidx.recyclerview.widget.SortedList
-import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.gummybearstudio.quicksudoku.core.Sudoku.Companion.CELLS
 import com.gummybearstudio.quicksudoku.core.Sudoku.Companion.NO_VALUE
 import com.gummybearstudio.quicksudoku.core.Sudoku.Companion.VALID_VALUES
@@ -112,10 +110,13 @@ class SudokuCreator(private val difficulty: Int) {
         }
     }
 
-    private companion object {
-        const val INIT_CELLS = 2
-        const val UNREACHABLE_ITERATIONS = 500
+    companion object {
+        private const val INIT_CELLS = 2
+        private const val UNREACHABLE_ITERATIONS = 500
+        const val EASY_DIFFICULTY = 80
+        const val HARD_DIFFICULTY = 1
     }
+
 
     class UnreachableDifficultyException(level: Int) : Exception("Unreachable difficulty, reached $level")
     class BadInitException() : Exception("Badly initialized sudoku")

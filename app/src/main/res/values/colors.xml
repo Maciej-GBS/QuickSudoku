@@ -4,6 +4,7 @@
     <color name="black">#FF000000</color>
     <color name="border">#3E0029</color>
     <color name="error">#F44336</color>
-    <color name="selection">#FF80D4</color>
+    <color name="selection">#FFC8EC</color>
+    <color name="mask">#979797</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

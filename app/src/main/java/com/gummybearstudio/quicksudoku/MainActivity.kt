@@ -24,11 +24,17 @@ class MainActivity : AppCompatActivity() {
 
         val bottomScroll = findViewById<LinearLayout>(R.id.bottomScroll)
         bottomScroll.addView(createButton("New Game") { controls.onStartNewGame() })
+        bottomScroll.addView(createButton("Resume Game") { controls.onLoad() })
         bottomScroll.addView(createButton("Clear") { controls.onKeyPressed(0) })
         (1 until 10).forEach { intValue ->
             bottomScroll.addView(
                 createButton(intValue.toString()) { controls.onKeyPressed(intValue) })
         }
+    }
+
+    override fun onStop() {
+        controls.onSave()
+        super.onStop()
     }
 
     private fun createButton(caption: String, onClick: View.OnClickListener): Button {

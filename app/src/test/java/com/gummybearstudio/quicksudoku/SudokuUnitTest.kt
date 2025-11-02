@@ -93,7 +93,7 @@ class SudokuUnitTest {
     @Test(timeout = 10000)
     fun successfulCreateSudokuTest() {
         val validator = SudokuValidator()
-        val creator = SudokuCreator(70)
+        val creator = SudokuCreator(SudokuCreator.EASY_DIFFICULTY)
         val sudoku = creator.create(3, 3, 9)
         printSudoku(sudoku)
         assertEquals(
@@ -130,7 +130,7 @@ class SudokuUnitTest {
 
     @Test(expected = SudokuCreator.UnreachableDifficultyException::class, timeout = 10000)
     fun failedCreateSudokuTest() {
-        SudokuCreator(1).create(1, 1, 1)
+        SudokuCreator(SudokuCreator.HARD_DIFFICULTY).create(1, 1, 1)
     }
 
     private fun printSudoku(sudoku: Sudoku) {
