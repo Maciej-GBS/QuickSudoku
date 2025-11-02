@@ -123,13 +123,15 @@ class BoardFragment : Fragment(), IGameControls {
     ): View {
         val inflatedView = inflater.inflate(R.layout.fragment_board, container, false)
 
-        val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
-        var nGrid = 0
-        for (i in 0 until 3) {
-            for (j in 0 until 3) {
-                val subGrid = GridLayout(requireContext())
-                buildGridLayout(subGrid, nGrid++)
-                mainGrid.addView(subGrid, createGridLayoutParams(i, j))
+        if (savedInstanceState == null) {
+            val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
+            var nGrid = 0
+            for (i in 0 until 3) {
+                for (j in 0 until 3) {
+                    val subGrid = GridLayout(requireContext())
+                    buildGridLayout(subGrid, nGrid++)
+                    mainGrid.addView(subGrid, createGridLayoutParams(i, j))
+                }
             }
         }
 
@@ -145,7 +147,7 @@ class BoardFragment : Fragment(), IGameControls {
             for (j in 0 until 3) {
                 val textView = CellTextView(requireContext())
                 textView.text = " "
-                textView.textSize = 26f // TODO should be calculated
+                textView.textSize = 26f // TODO should be calculated or use auto-size?
                 textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 textView.setBackgroundColor(resources.getColor(R.color.white))
                 textView.setOnClickListener {
