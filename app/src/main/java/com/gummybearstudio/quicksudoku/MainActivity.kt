@@ -2,9 +2,6 @@ package com.gummybearstudio.quicksudoku
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
 import com.gummybearstudio.quicksudoku.ui.board.BoardFragment
 import com.gummybearstudio.quicksudoku.ui.board.IGameControls
 import com.gummybearstudio.quicksudoku.ui.menu.IMenuObserver
@@ -26,13 +23,6 @@ class MainActivity : AppCompatActivity(), IMenuObserver {
             switchToMenu()
 
             menu.subscribe(this)
-
-            val bottomScroll = findViewById<LinearLayout>(R.id.bottomScroll)
-            bottomScroll.addView(createButton("Clear") { controls.onKeyPressed(0) })
-            (1 until 10).forEach { intValue ->
-                bottomScroll.addView(
-                    createButton(intValue.toString()) { controls.onKeyPressed(intValue) })
-            }
         }
     }
 
@@ -53,13 +43,6 @@ class MainActivity : AppCompatActivity(), IMenuObserver {
 
     override fun onExit() {
         finishAffinity()
-    }
-
-    private fun createButton(caption: String, onClick: View.OnClickListener): Button {
-        return Button(this).apply {
-            text = caption
-            setOnClickListener(onClick)
-        }
     }
 
     private fun switchToBoard() {

@@ -3,43 +3,71 @@ package com.gummybearstudio.quicksudoku.ui.board
 import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
 
 import com.gummybearstudio.quicksudoku.R
 import com.gummybearstudio.quicksudoku.core.Sudoku
-import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatDecode
 import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
 class BoardFragment : Fragment(), IGameControls {
 
     companion object {
         fun newInstance() = BoardFragment()
-        const val INNER_PADDING = 4
 
         private const val PREFS_KEY = "sudokuPrefs"
         private const val SAVE_GAME_KEY = "sudokuSaveGame"
     }
 
     private val viewModel: BoardViewModel by viewModels()
-    private var cellTextViews: MutableList<CellTextView> = mutableListOf()
+    private var cellTextViews: List<CellTextView> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.state.observe(this) { state ->
-            // TODO handle UI state modes
-            Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
+        if (savedInstanceState == null) {
+            viewModel.state.observe(this) { state ->
+                // TODO handle UI state modes
+                Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
+            }
+            viewModel.selectedCell.observe(this, ::callbackCellColorChanged)
+            viewModel.validFlags.observe(this, ::callbackValidColorChanged)
+            viewModel.maskFlags.observe(this, ::callbackMaskColorChanged)
+            viewModel.cellValues.observe(this, ::callbackCellValues)
         }
-        viewModel.selectedCell.observe(this) { cell -> callbackCellColorChanged(cell) }
-        viewModel.validFlags.observe(this) { flags -> callbackValidColorChanged(flags) }
-        viewModel.maskFlags.observe(this) { flags -> callbackMaskColorChanged(flags) }
-        viewModel.cellValues.observe(this, ::callbackCellValues)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val inflatedView = inflater.inflate(R.layout.fragment_board, container, false)
+
+        if (savedInstanceState == null) {
+            val builder = GridBuilder(requireContext(), viewModel)
+            val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
+            cellTextViews = builder.build(mainGrid)
+
+            val btnBuilder = ButtonBuilder(requireContext())
+            val bottomScrollUpper = inflatedView.findViewById<LinearLayout>(R.id.bottomScrollUpper)
+            val bottomScrollLower = inflatedView.findViewById<LinearLayout>(R.id.bottomScrollLower)
+            bottomScrollUpper.addView(btnBuilder.build("C") { onKeyPressed(0) })
+            (1 until 5).forEach { intValue ->
+                bottomScrollUpper.addView(
+                    btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
+            }
+            (5 until 10).forEach { intValue ->
+                bottomScrollLower.addView(
+                    btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
+            }
+        }
+
+        return inflatedView
     }
 
     override fun onStartNewGame() {
@@ -117,54 +145,4 @@ class BoardFragment : Fragment(), IGameControls {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val inflatedView = inflater.inflate(R.layout.fragment_board, container, false)
-
-        if (savedInstanceState == null) {
-            val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
-            var nGrid = 0
-            for (i in 0 until 3) {
-                for (j in 0 until 3) {
-                    val subGrid = GridLayout(requireContext())
-                    buildGridLayout(subGrid, nGrid++)
-                    mainGrid.addView(subGrid, createGridLayoutParams(i, j))
-                }
-            }
-        }
-
-        return inflatedView
-    }
-
-    private fun buildGridLayout(grid: GridLayout, gridId: Int) {
-        grid.columnCount = 3
-        grid.rowCount = 3
-        grid.setPadding(INNER_PADDING, INNER_PADDING, INNER_PADDING, INNER_PADDING)
-        grid.setBackgroundColor(resources.getColor(R.color.border))
-        for (i in 0 until 3) {
-            for (j in 0 until 3) {
-                val textView = CellTextView(requireContext())
-                textView.text = " "
-                textView.textSize = 26f // TODO should be calculated or use auto-size?
-                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textView.setBackgroundColor(resources.getColor(R.color.white))
-                textView.setOnClickListener {
-                    val startCell = (gridId * 9).flatDecode()
-                    viewModel.select(startCell.first + i, startCell.second + j)
-                }
-                grid.addView(textView, createGridLayoutParams(i, j))
-                cellTextViews.add(textView)
-            }
-        }
-    }
-
-    private fun createGridLayoutParams(row: Int, col: Int): GridLayout.LayoutParams {
-        return GridLayout.LayoutParams().apply {
-            rowSpec = GridLayout.spec(row)
-            columnSpec = GridLayout.spec(col)
-            setGravity(Gravity.CENTER)
-        }
-    }
 }

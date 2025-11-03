@@ -1,22 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/board"
     android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
+    android:orientation="vertical"
     tools:context=".ui.board.BoardFragment">
 
-        <androidx.gridlayout.widget.GridLayout
-            android:id="@+id/mainGridLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <FrameLayout
             android:layout_gravity="center"
-            app:columnCount="3"
-            app:rowCount="3">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        </androidx.gridlayout.widget.GridLayout>
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/mainGridLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:columnCount="3"
+                    app:rowCount="3">
+                </androidx.gridlayout.widget.GridLayout>
 
-</FrameLayout>
+        </FrameLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:id="@+id/bottomScrollUpper"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/bottomScrollLower"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                        </LinearLayout>
+                </LinearLayout>
+
+        </HorizontalScrollView>
+
+</LinearLayout>
