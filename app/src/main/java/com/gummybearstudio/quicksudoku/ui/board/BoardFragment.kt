@@ -108,7 +108,7 @@ class BoardFragment : Fragment(), IGameControls {
 
     private fun resetColor() {
         cellTextViews.forEach { textView ->
-            textView.setBackgroundColor(resources.getColor(R.color.white))
+            textView.setBackgroundColor(resources.getColor(R.color.qs_white))
         }
         viewModel.maskFlags.value?.apply {
             callbackMaskColorChanged(this)
@@ -118,13 +118,13 @@ class BoardFragment : Fragment(), IGameControls {
     private fun callbackValidColorChanged(flags: List<Boolean>) {
         resetColor()
         flags.zip(cellTextViews).forEach {
-            if (!it.first) it.second.setBackgroundColor(resources.getColor(R.color.error))
+            if (!it.first) it.second.setBackgroundColor(resources.getColor(R.color.qs_error))
         }
     }
 
     private fun callbackMaskColorChanged(flags: List<Boolean>) {
         flags.zip(cellTextViews).forEach {
-            if (it.first) it.second.setBackgroundColor(resources.getColor(R.color.mask))
+            if (it.first) it.second.setBackgroundColor(resources.getColor(R.color.qs_mask))
         }
     }
 
@@ -132,7 +132,7 @@ class BoardFragment : Fragment(), IGameControls {
         resetColor()
         cell.apply {
             cellTextViews[this.flatEncode()]
-                .setBackgroundColor(resources.getColor(R.color.selection))
+                .setBackgroundColor(resources.getColor(R.color.qs_selection))
         }
     }
 

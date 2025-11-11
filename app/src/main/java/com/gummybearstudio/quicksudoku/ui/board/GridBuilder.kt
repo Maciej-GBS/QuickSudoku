@@ -36,14 +36,14 @@ class GridBuilder(
             INNER_PADDING,
             INNER_PADDING
         )
-        grid.setBackgroundColor(context.resources.getColor(R.color.border))
+        grid.setBackgroundColor(context.resources.getColor(R.color.qs_border))
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = CellTextView(context)
                 textView.text = " "
                 textView.textSize = 26f // TODO should be calculated or use auto-size?
                 textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textView.setBackgroundColor(context.resources.getColor(R.color.white))
+                textView.setBackgroundColor(context.resources.getColor(R.color.qs_white))
                 textView.setOnClickListener {
                     val startCell = (gridId * 9).flatDecode()
                     viewModel.select(startCell.first + i, startCell.second + j)

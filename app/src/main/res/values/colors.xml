@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#FFFFFF</color>
-    <color name="black">#FF000000</color>
-    <color name="border">#3E0029</color>
-    <color name="error">#F44336</color>
-    <color name="selection">#FFC8EC</color>
-    <color name="mask">#E4E4E4</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="qs_background">#FFFFFF</color>
+    <color name="qs_black">#FF000000</color>
+    <color name="qs_border">#3E0029</color>
+    <color name="qs_error">#F44336</color>
+    <color name="qs_selection">#FFC8EC</color>
+    <color name="qs_mask">#E4E4E4</color>
+    <color name="qs_white">#FFFFFFFF</color>
 </resources>

@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_pressed="true"
-        android:color="@color/selection" />
+        android:color="@color/qs_selection" />
     <item
         android:state_enabled="false"
-        android:color="@color/mask" />
-    <item android:color="@color/white" />
+        android:color="@color/qs_mask" />
+    <item android:color="@color/qs_white" />
 </selector>
