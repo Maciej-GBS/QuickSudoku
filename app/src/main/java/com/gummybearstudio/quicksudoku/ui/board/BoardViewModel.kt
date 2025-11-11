@@ -12,6 +12,10 @@ import com.gummybearstudio.quicksudoku.ui.board.BoardHelper.flatEncode
 
 class BoardViewModel : ViewModel() {
 
+    companion object {
+        private const val MAX_START_ATTEMPTS = 3
+    }
+
     class InvalidGameStateException(what: String, state: EGameState) :
         Exception("$what not allowed in game state $state")
 
@@ -52,11 +56,27 @@ class BoardViewModel : ViewModel() {
         if (_state.value != EGameState.NEW_GAME || _selectedCell.value == null) {
             throw InvalidGameStateException("startGame", _state.value!!)
         }
+        if (initValue == 0) {
+            return
+        }
         val cell = _selectedCell.value!!
-        sudoku = SudokuCreator(difficulty).create(cell.first, cell.second, initValue)
-        markMaskedCells()
-        refreshLiveBoard()
-        _state.value = EGameState.ONGOING
+        var d = 0
+        while (d < MAX_START_ATTEMPTS && d + difficulty < SudokuCreator.EASY_DIFFICULTY) {
+            try {
+                sudoku = SudokuCreator(d + difficulty)
+                    .create(cell.first, cell.second, initValue)
+                markMaskedCells()
+                refreshLiveBoard()
+                _state.value = EGameState.ONGOING
+                return
+            }
+            catch (_: SudokuCreator.UnreachableDifficultyException) {
+                android.util.Log.d(
+                    "BoardViewModel",
+                    "Difficulty ${d + difficulty} is unreachable")
+                d += 1
+            }
+        }
     }
 
     fun updateCell(value: Int) {

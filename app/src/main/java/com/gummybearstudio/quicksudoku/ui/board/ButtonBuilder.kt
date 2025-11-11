@@ -9,6 +9,8 @@ class ButtonBuilder(
 
     fun build(caption: String, onClick: View.OnClickListener): Button {
         return Button(context).apply {
+            minWidth = 10
+            minimumWidth = 10
             text = caption
             backgroundTintList = context.resources.getColorStateList(R.color.btn_color_selector)
             setOnClickListener(onClick)

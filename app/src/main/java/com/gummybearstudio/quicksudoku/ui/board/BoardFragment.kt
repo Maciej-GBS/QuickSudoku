@@ -31,10 +31,6 @@ class BoardFragment : Fragment(), IGameControls {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            viewModel.state.observe(this) { state ->
-                // TODO handle UI state modes
-                Toast.makeText(requireContext(), state.toString(), Toast.LENGTH_SHORT).show()
-            }
             viewModel.selectedCell.observe(this, ::callbackCellColorChanged)
             viewModel.validFlags.observe(this, ::callbackValidColorChanged)
             viewModel.maskFlags.observe(this, ::callbackMaskColorChanged)
@@ -54,15 +50,11 @@ class BoardFragment : Fragment(), IGameControls {
             cellTextViews = builder.build(mainGrid)
 
             val btnBuilder = ButtonBuilder(requireContext())
-            val bottomScrollUpper = inflatedView.findViewById<LinearLayout>(R.id.bottomScrollUpper)
-            val bottomScrollLower = inflatedView.findViewById<LinearLayout>(R.id.bottomScrollLower)
-            bottomScrollUpper.addView(btnBuilder.build("C") { onKeyPressed(0) })
-            (1 until 5).forEach { intValue ->
-                bottomScrollUpper.addView(
-                    btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
-            }
-            (5 until 10).forEach { intValue ->
-                bottomScrollLower.addView(
+            val bottomScroll = inflatedView.findViewById<LinearLayout>(R.id.bottomScroll)
+
+            bottomScroll.addView(btnBuilder.build("C") { onKeyPressed(0) })
+            (1 until 10).forEach { intValue ->
+                bottomScroll.addView(
                     btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
             }
         }
@@ -76,8 +68,15 @@ class BoardFragment : Fragment(), IGameControls {
 
     override fun onKeyPressed(id: Int) {
         when (viewModel.state.value) {
-            EGameState.NEW_GAME ->
-                viewModel.startGame(id, 50) // TODO prompt user for difficulty
+            EGameState.NEW_GAME -> {
+                viewModel.startGame(id, 30) // TODO prompt user for difficulty
+                if (viewModel.state.value != EGameState.ONGOING) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to find an unique sudoku, try a different value",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
             EGameState.ONGOING ->
                 viewModel.updateCell(id)
             else -> {}
