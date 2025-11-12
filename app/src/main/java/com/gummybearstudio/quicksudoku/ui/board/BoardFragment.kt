@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
@@ -27,8 +29,9 @@ class BoardFragment : Fragment(), IGameControls {
     }
 
     private val viewModel: BoardViewModel by viewModels()
-    private var cellTextViews: List<CellTextView> = listOf()
     private var headerTextView: TextView? = null
+    private var cellTextViews: List<CellTextView> = listOf()
+    private val btnViews: MutableList<Button> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,20 +52,37 @@ class BoardFragment : Fragment(), IGameControls {
         val inflatedView = inflater.inflate(R.layout.fragment_board, container, false)
 
         if (savedInstanceState == null) {
+            headerTextView = inflatedView.findViewById(R.id.headerTextView)
+
             val builder = GridBuilder(requireContext(), viewModel)
             val mainGrid = inflatedView.findViewById<GridLayout>(R.id.mainGridLayout)
             cellTextViews = builder.build(mainGrid)
 
             val btnBuilder = ButtonBuilder(requireContext())
             val bottomScroll = inflatedView.findViewById<LinearLayout>(R.id.bottomScroll)
-
-            bottomScroll.addView(btnBuilder.build("C") { onKeyPressed(0) })
+            val addBtnAction = { btn: Button ->
+                btnViews.add(btn)
+                bottomScroll.addView(btn)
+            }
+            addBtnAction(btnBuilder.build("C") { onKeyPressed(0) })
             (1 until 10).forEach { intValue ->
-                bottomScroll.addView(
-                    btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
+                addBtnAction(btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
             }
 
-            headerTextView = inflatedView.findViewById(R.id.headerTextView)
+            inflatedView.findViewById<SeekBar>(R.id.seekFont).apply {
+                callbackOnFontChanged(progress)
+                setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                    override fun onProgressChanged(
+                        seekBar: SeekBar?,
+                        progress: Int,
+                        fromUser: Boolean
+                    ) {
+                        callbackOnFontChanged(progress)
+                    }
+                })
+            }
         }
 
         return inflatedView
@@ -159,6 +179,17 @@ class BoardFragment : Fragment(), IGameControls {
                 headerTextView?.text = resources.getString(R.string.state_finished)
             else ->
                 headerTextView?.text = resources.getString(R.string.state_welcome)
+        }
+    }
+
+    private fun callbackOnFontChanged(sizeIndex: Int) {
+        val sizeArrayGrid = resources.getIntArray(R.array.grid_text_sizes)
+        val sizeArrayBtn = resources.getIntArray(R.array.btn_text_sizes)
+        cellTextViews.forEach { textView ->
+            textView.textSize = sizeArrayGrid[sizeIndex].toFloat()
+        }
+        btnViews.forEach { btnView ->
+            btnView.textSize = sizeArrayBtn[sizeIndex].toFloat()
         }
     }
 

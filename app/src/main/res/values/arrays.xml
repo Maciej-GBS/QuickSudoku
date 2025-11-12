@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<array name="grid_text_sizes">
+    <item>16</item>
+    <item>20</item>
+    <item>24</item>
+    <item>28</item>
+    <item>32</item>
+</array>
+<array name="btn_text_sizes">
+    <item>14</item>
+    <item>18</item>
+    <item>22</item>
+    <item>26</item>
+    <item>30</item>
+</array>
+</resources>

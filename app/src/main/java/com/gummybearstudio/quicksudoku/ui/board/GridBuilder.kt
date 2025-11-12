@@ -40,13 +40,15 @@ class GridBuilder(
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val textView = CellTextView(context)
-                textView.text = " "
-                textView.textSize = 26f // TODO should be calculated or use auto-size?
-                textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                textView.setBackgroundColor(context.resources.getColor(R.color.qs_white))
-                textView.setOnClickListener {
-                    val startCell = (gridId * 9).flatDecode()
-                    viewModel.select(startCell.first + i, startCell.second + j)
+                textView.apply {
+                    text = " "
+                    textSize = 26f
+                    textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    setBackgroundColor(context.resources.getColor(R.color.qs_white))
+                    setOnClickListener {
+                        val startCell = (gridId * 9).flatDecode()
+                        viewModel.select(startCell.first + i, startCell.second + j)
+                    }
                 }
                 grid.addView(textView, createGridLayoutParams(i, j))
                 cellTextViews.add(textView)
