@@ -12,6 +12,7 @@ class ButtonBuilder(
             minWidth = 10
             minimumWidth = 10
             text = caption
+            textSize = 20f
             backgroundTintList = context.resources.getColorStateList(R.color.btn_color_selector)
             setOnClickListener(onClick)
         }

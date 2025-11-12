@@ -3,4 +3,9 @@
     <string name="new_game">New Game</string>
     <string name="resume_game">Resume Game</string>
     <string name="exit">Exit</string>
+    <string name="seek_font">Size:</string>
+    <string name="sudoku_failure">Failed to find an unique sudoku, try a different value</string>
+    <string name="state_welcome">Start by inserting first digit!</string>
+    <string name="state_ongoing"> </string>
+    <string name="state_finished">Congratulations!</string>
 </resources>

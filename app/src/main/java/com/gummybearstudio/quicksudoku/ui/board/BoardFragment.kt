@@ -1,5 +1,6 @@
 package com.gummybearstudio.quicksudoku.ui.board
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.gridlayout.widget.GridLayout
 
@@ -26,11 +28,13 @@ class BoardFragment : Fragment(), IGameControls {
 
     private val viewModel: BoardViewModel by viewModels()
     private var cellTextViews: List<CellTextView> = listOf()
+    private var headerTextView: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
+            viewModel.state.observe(this, ::callbackStateChanged)
             viewModel.selectedCell.observe(this, ::callbackCellColorChanged)
             viewModel.validFlags.observe(this, ::callbackValidColorChanged)
             viewModel.maskFlags.observe(this, ::callbackMaskColorChanged)
@@ -57,6 +61,8 @@ class BoardFragment : Fragment(), IGameControls {
                 bottomScroll.addView(
                     btnBuilder.build(intValue.toString()) { onKeyPressed(intValue) })
             }
+
+            headerTextView = inflatedView.findViewById(R.id.headerTextView)
         }
 
         return inflatedView
@@ -73,7 +79,7 @@ class BoardFragment : Fragment(), IGameControls {
                 if (viewModel.state.value != EGameState.ONGOING) {
                     Toast.makeText(
                         requireContext(),
-                        "Failed to find an unique sudoku, try a different value",
+                        resources.getString(R.string.sudoku_failure),
                         Toast.LENGTH_SHORT).show()
                 }
             }
@@ -135,12 +141,24 @@ class BoardFragment : Fragment(), IGameControls {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun callbackCellValues(values: List<Int>) {
         cellTextViews.zip(values).forEach {
             when (it.second) {
                 Sudoku.NO_VALUE -> it.first.text = " "
                 else -> it.first.text = it.second.toString()
             }
+        }
+    }
+
+    private fun callbackStateChanged(state: EGameState) {
+        when (state) {
+            EGameState.ONGOING ->
+                headerTextView?.text = resources.getString(R.string.state_ongoing)
+            EGameState.FINISHED ->
+                headerTextView?.text = resources.getString(R.string.state_finished)
+            else ->
+                headerTextView?.text = resources.getString(R.string.state_welcome)
         }
     }
 
